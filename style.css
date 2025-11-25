@@ -177,3 +177,9 @@ button {
     grid-template-columns: 1fr;
   }
 }
+.disclaimer {
+  text-align: center;
+  margin: 24px 0;
+  color: #888;
+  font-size: 0.95em;
+}
