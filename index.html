@@ -1,620 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Photo Collage Builder</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            margin-bottom: 20px;
-        }
-
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-            font-size: 2rem;
-        }
-
-        .controls {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        label {
-            font-weight: 600;
-            color: #555;
-            font-size: 0.9rem;
-        }
-
-        input[type="number"], input[type="file"] {
-            padding: 10px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-
-        input[type="number"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        input[type="file"] {
-            cursor: pointer;
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        button {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-secondary {
-            background: white;
-            color: #667eea;
-            border: 2px solid #667eea;
-        }
-
-        .btn-secondary:hover {
-            background: #f5f5f5;
-        }
-
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c0392b;
-        }
-
-        .collage-container {
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
-            overflow: auto;
-        }
-
-        #collage {
-            position: relative;
-            margin: 0 auto;
-            background: #f9f9f9;
-            border: 2px dashed #ddd;
-        }
-
-        .photo {
-            position: absolute;
-            overflow: hidden;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            cursor: pointer;
-            transition: box-shadow 0.2s;
-            will-change: z-index;
-        }
-
-        .photo:hover {
-            box-shadow: 0 6px 16px rgba(0,0,0,0.25);
-        }
-
-        .photo img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-            pointer-events: none;
-        }
-        
-        #collage {
-            position: relative;
-            margin: 0 auto;
-            background: #f9f9f9;
-            border: 2px dashed #ddd;
-            transform: translateZ(0);
-        }
-
-        .info {
-            text-align: center;
-            color: #666;
-            margin-top: 15px;
-            font-size: 0.9rem;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            color: #667eea;
-            font-weight: 600;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        @media (max-width: 768px) {
-            .controls {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <div class="container">
-        <div class="header">
-            <h1>📸 Photo Collage Builder</h1>
-            
-            <div class="controls">
-                <div class="control-group">
-                    <label for="canvasWidth">Collage Width (px)</label>
-                    <input type="number" id="canvasWidth" value="4000" min="400" max="8000">
-                </div>
-                
-                <div class="control-group">
-                    <label for="canvasHeight">Collage Height (px)</label>
-                    <input type="number" id="canvasHeight" value="3500" min="400" max="8000">
-                </div>
-                
-                <div class="control-group">
-                    <label for="photoSize">Approx Photo Size (px)</label>
-                    <input type="number" id="photoSize" value="200" min="50" max="500">
-                </div>
-            </div>
+      <div class="header">
+        <h1>📸 Photo Collage Builder</h1>
 
-            <div class="button-group" style="margin-top: 20px;">
-                <input type="file" id="fileInput" multiple accept="image/*" style="display: none;">
-                <button class="btn-primary" onclick="document.getElementById('fileInput').click()">
-                    📁 Upload Photos
-                </button>
-                <button class="btn-secondary" onclick="generateCollage()">
-                    ✨ Generate Collage
-                </button>
-                <button class="btn-secondary" onclick="downloadCollage()">
-                    💾 Download Collage
-                </button>
-                <button class="btn-danger" onclick="clearAll()">
-                    🗑️ Clear All
-                </button>
-            </div>
+        <div class="controls">
+          <div class="control-group">
+            <label for="canvasWidth">Collage Width (px)</label>
+            <input
+              type="number"
+              id="canvasWidth"
+              value="4000"
+              min="400"
+              max="8000"
+            />
+          </div>
 
-            <div class="info" id="photoCount">No photos uploaded</div>
-            <div class="loading" id="loading">Generating collage...</div>
+          <div class="control-group">
+            <label for="canvasHeight">Collage Height (px)</label>
+            <input
+              type="number"
+              id="canvasHeight"
+              value="3500"
+              min="400"
+              max="8000"
+            />
+          </div>
+
+          <div class="control-group">
+            <label for="photoSize">Approx Photo Size (px)</label>
+            <input
+              type="number"
+              id="photoSize"
+              value="200"
+              min="50"
+              max="500"
+            />
+          </div>
         </div>
 
-        <div class="collage-container">
-            <div id="collage"></div>
+        <div class="button-group" style="margin-top: 20px">
+          <input
+            type="file"
+            id="fileInput"
+            multiple
+            accept="image/*"
+            style="display: none"
+          />
+          <button
+            class="btn-primary"
+            onclick="document.getElementById('fileInput').click()"
+          >
+            📁 Upload Photos
+          </button>
+          <button class="btn-secondary" onclick="generateCollage()">
+            ✨ Generate Collage
+          </button>
+          <button class="btn-secondary" onclick="downloadCollage()">
+            💾 Download Collage
+          </button>
+          <button class="btn-danger" onclick="clearAll()">🗑️ Clear All</button>
         </div>
+
+        <div class="info" id="photoCount">No photos uploaded</div>
+        <div class="loading" id="loading">Generating collage...</div>
+      </div>
+
+      <div class="collage-container">
+        <div id="collage"></div>
+      </div>
     </div>
 
-    <script>
-        let photos = [];
-        let collageGenerated = false;
-
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            const files = Array.from(e.target.files);
-            loadPhotos(files);
-            // Reset the input so the same files can be selected again if needed
-            this.value = '';
-        });
-
-        function loadPhotos(files) {
-            let loaded = 0;
-            const totalFiles = files.length;
-            
-            if (totalFiles === 0) return;
-            
-            // Show loading indicator
-            document.getElementById('loading').classList.add('active');
-            document.getElementById('loading').textContent = `Loading photos: 0/${totalFiles}`;
-            
-            // Process files in batches to avoid blocking
-            const batchSize = 5;
-            let currentBatch = 0;
-            
-            function processBatch() {
-                const start = currentBatch * batchSize;
-                const end = Math.min(start + batchSize, totalFiles);
-                
-                for (let i = start; i < end; i++) {
-                    const file = files[i];
-                    
-                    // Skip non-image files
-                    if (!file.type.startsWith('image/')) {
-                        loaded++;
-                        continue;
-                    }
-                    
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        const img = new Image();
-                        img.onload = function() {
-                            // More aggressive resizing to reduce memory
-                            const maxDimension = 1800; // Reduced from 2400
-                            let width = img.width;
-                            let height = img.height;
-                            
-                            if (width > maxDimension || height > maxDimension) {
-                                if (width > height) {
-                                    height = (height / width) * maxDimension;
-                                    width = maxDimension;
-                                } else {
-                                    width = (width / height) * maxDimension;
-                                    height = maxDimension;
-                                }
-                                
-                                // Create a canvas to resize the image
-                                const canvas = document.createElement('canvas');
-                                canvas.width = width;
-                                canvas.height = height;
-                                const ctx = canvas.getContext('2d');
-                                ctx.drawImage(img, 0, 0, width, height);
-                                
-                                photos.push({
-                                    src: canvas.toDataURL('image/jpeg', 0.85), // Reduced quality from 0.9
-                                    width: width,
-                                    height: height,
-                                    aspectRatio: width / height
-                                });
-                            } else {
-                                photos.push({
-                                    src: e.target.result,
-                                    width: img.width,
-                                    height: img.height,
-                                    aspectRatio: img.width / img.height
-                                });
-                            }
-                            
-                            loaded++;
-                            document.getElementById('loading').textContent = `Loading photos: ${loaded}/${totalFiles}`;
-                            updatePhotoCount();
-                            
-                            if (loaded === totalFiles) {
-                                document.getElementById('loading').classList.remove('active');
-                                console.log(`Batch complete. Total photos: ${photos.length}`);
-                            }
-                        };
-                        img.onerror = function() {
-                            loaded++;
-                            if (loaded === totalFiles) {
-                                document.getElementById('loading').classList.remove('active');
-                            }
-                        };
-                        img.src = e.target.result;
-                    };
-                    reader.onerror = function() {
-                        loaded++;
-                        if (loaded === totalFiles) {
-                            document.getElementById('loading').classList.remove('active');
-                        }
-                    };
-                    reader.readAsDataURL(file);
-                }
-                
-                currentBatch++;
-                if (end < totalFiles) {
-                    // Process next batch after a small delay
-                    setTimeout(processBatch, 50);
-                }
-            }
-            
-            processBatch();
-        }
-
-        function updatePhotoCount() {
-            document.getElementById('photoCount').textContent = 
-                `${photos.length} photo${photos.length !== 1 ? 's' : ''} uploaded`;
-        }
-
-        function generateCollage() {
-            if (photos.length === 0) {
-                alert('Please upload some photos first!');
-                return;
-            }
-
-            document.getElementById('loading').classList.add('active');
-            document.getElementById('loading').textContent = 'Calculating positions...';
-            
-            setTimeout(() => {
-                const canvasWidth = parseInt(document.getElementById('canvasWidth').value);
-                const canvasHeight = parseInt(document.getElementById('canvasHeight').value);
-                const photoSize = parseInt(document.getElementById('photoSize').value);
-
-                const collage = document.getElementById('collage');
-                collage.style.width = canvasWidth + 'px';
-                collage.style.height = canvasHeight + 'px';
-                collage.innerHTML = '';
-
-                const positions = placePhotos(canvasWidth, canvasHeight, photoSize);
-                
-                let maxZIndex = positions.length;
-                
-                document.getElementById('loading').textContent = `Placing ${positions.length} photos...`;
-                
-                // Render photos in batches to prevent freezing
-                const batchSize = 20;
-                let currentIndex = 0;
-                
-                function renderBatch() {
-                    const end = Math.min(currentIndex + batchSize, positions.length);
-                    
-                    for (let i = currentIndex; i < end; i++) {
-                        const pos = positions[i];
-                        const photoDiv = document.createElement('div');
-                        photoDiv.className = 'photo';
-                        photoDiv.style.left = pos.x + 'px';
-                        photoDiv.style.top = pos.y + 'px';
-                        photoDiv.style.width = pos.width + 'px';
-                        photoDiv.style.height = pos.height + 'px';
-                        photoDiv.style.transform = `rotate(${pos.rotation}deg)`;
-                        photoDiv.style.zIndex = pos.zIndex;
-
-                        const img = document.createElement('img');
-                        img.src = pos.photo.src;
-                        photoDiv.appendChild(img);
-
-                        // Click handler to bring photo to front
-                        photoDiv.addEventListener('click', function() {
-                            maxZIndex++;
-                            this.style.zIndex = maxZIndex;
-                        });
-
-                        collage.appendChild(photoDiv);
-                    }
-                    
-                    currentIndex = end;
-                    
-                    if (currentIndex < positions.length) {
-                        document.getElementById('loading').textContent = 
-                            `Placing photos: ${currentIndex}/${positions.length}`;
-                        // Continue with next batch
-                        requestAnimationFrame(renderBatch);
-                    } else {
-                        collageGenerated = true;
-                        document.getElementById('loading').classList.remove('active');
-                        console.log('Collage generation complete!');
-                    }
-                }
-                
-                // Start rendering
-                renderBatch();
-            }, 100);
-        }
-
-        function placePhotos(canvasWidth, canvasHeight, baseSize) {
-            const positions = [];
-            const shuffled = [...photos].sort(() => Math.random() - 0.5);
-            
-            // Calculate grid with much denser coverage to handle portrait photos
-            const overlapFactor = 0.55; // Increased overlap - photos overlap by 45%
-            const effectivePhotoSize = baseSize * overlapFactor;
-            const cols = Math.ceil(canvasWidth / effectivePhotoSize) + 2;
-            const rows = Math.ceil(canvasHeight / effectivePhotoSize) + 2;
-            const totalNeeded = cols * rows;
-            
-            console.log(`Canvas: ${canvasWidth}x${canvasHeight}, Base size: ${baseSize}`);
-            console.log(`Grid: ${cols} cols x ${rows} rows = ${totalNeeded} positions needed`);
-            console.log(`Available photos: ${photos.length}`);
-            
-            // Create array with enough photos (using duplicates if needed)
-            let photosToUse = [];
-            let duplicatesUsed = 0;
-            
-            while (photosToUse.length < totalNeeded) {
-                const remaining = totalNeeded - photosToUse.length;
-                const batch = [...shuffled].sort(() => Math.random() - 0.5).slice(0, remaining);
-                photosToUse.push(...batch);
-                
-                if (photosToUse.length < totalNeeded) {
-                    duplicatesUsed += batch.length;
-                }
-            }
-            
-            // Shuffle one more time to ensure randomness
-            photosToUse = photosToUse.sort(() => Math.random() - 0.5);
-            
-            console.log(`Total photos used: ${photosToUse.length}`);
-            console.log(`Duplicates used: ${duplicatesUsed}`);
-            console.log(`Unique photos: ${photosToUse.length - duplicatesUsed}`);
-            
-            // Place photos in a grid with random variation
-            let photoIndex = 0;
-            
-            for (let row = 0; row < rows; row++) {
-                for (let col = 0; col < cols; col++) {
-                    if (photoIndex >= photosToUse.length) break;
-                    
-                    const photo = photosToUse[photoIndex];
-                    photoIndex++;
-                    
-                    // Larger size variation to ensure coverage
-                    const sizeVariation = 0.9 + Math.random() * 0.4; // 90% to 130% of base size
-                    let width, height;
-                    
-                    if (photo.aspectRatio > 1) {
-                        // Landscape
-                        width = baseSize * sizeVariation;
-                        height = width / photo.aspectRatio;
-                    } else {
-                        // Portrait - make them slightly larger to compensate for narrowness
-                        height = baseSize * sizeVariation * 1.1;
-                        width = height * photo.aspectRatio;
-                    }
-                    
-                    // Position with more overlap and randomness
-                    const xBase = col * effectivePhotoSize - baseSize * 0.2;
-                    const yBase = row * effectivePhotoSize - baseSize * 0.2;
-                    
-                    // Larger random offset for more natural placement
-                    const offsetRange = baseSize * 0.4;
-                    const xOffset = (Math.random() - 0.5) * offsetRange;
-                    const yOffset = (Math.random() - 0.5) * offsetRange;
-                    
-                    const x = xBase + xOffset;
-                    const y = yBase + yOffset;
-                    
-                    // Random rotation
-                    const rotation = (Math.random() - 0.5) * 20; // -10 to +10 degrees
-                    
-                    // Random z-index for natural overlap
-                    const zIndex = Math.floor(Math.random() * totalNeeded);
-                    
-                    positions.push({
-                        photo,
-                        x: x,
-                        y: y,
-                        width,
-                        height,
-                        rotation,
-                        zIndex
-                    });
-                }
-            }
-            
-            console.log(`Actual photos placed: ${positions.length}`);
-            return positions;
-        }
-
-        async function downloadCollage() {
-            if (!collageGenerated) {
-                alert('Please generate a collage first!');
-                return;
-            }
-
-            const collage = document.getElementById('collage');
-            const canvasWidth = parseInt(collage.style.width);
-            const canvasHeight = parseInt(collage.style.height);
-
-            const canvas = document.createElement('canvas');
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-            const ctx = canvas.getContext('2d');
-
-            ctx.fillStyle = '#f9f9f9';
-            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-            const photoElements = Array.from(collage.querySelectorAll('.photo'));
-            
-            // Sort by z-index to maintain proper layering
-            photoElements.sort((a, b) => {
-                return parseInt(a.style.zIndex) - parseInt(b.style.zIndex);
-            });
-
-            for (const photoEl of photoElements) {
-                const img = photoEl.querySelector('img');
-                const x = parseFloat(photoEl.style.left);
-                const y = parseFloat(photoEl.style.top);
-                const width = parseFloat(photoEl.style.width);
-                const height = parseFloat(photoEl.style.height);
-                const rotationMatch = photoEl.style.transform.match(/-?\d+\.?\d*/);
-                const rotation = rotationMatch ? parseFloat(rotationMatch[0]) * Math.PI / 180 : 0;
-
-                ctx.save();
-                ctx.translate(x + width / 2, y + height / 2);
-                ctx.rotate(rotation);
-                
-                // Draw rounded rectangle clipping path
-                const radius = 8;
-                ctx.beginPath();
-                ctx.moveTo(-width/2 + radius, -height/2);
-                ctx.lineTo(width/2 - radius, -height/2);
-                ctx.quadraticCurveTo(width/2, -height/2, width/2, -height/2 + radius);
-                ctx.lineTo(width/2, height/2 - radius);
-                ctx.quadraticCurveTo(width/2, height/2, width/2 - radius, height/2);
-                ctx.lineTo(-width/2 + radius, height/2);
-                ctx.quadraticCurveTo(-width/2, height/2, -width/2, height/2 - radius);
-                ctx.lineTo(-width/2, -height/2 + radius);
-                ctx.quadraticCurveTo(-width/2, -height/2, -width/2 + radius, -height/2);
-                ctx.closePath();
-                ctx.clip();
-                
-                await new Promise((resolve) => {
-                    if (img.complete) {
-                        ctx.drawImage(img, -width / 2, -height / 2, width, height);
-                        resolve();
-                    } else {
-                        img.onload = function() {
-                            ctx.drawImage(img, -width / 2, -height / 2, width, height);
-                            resolve();
-                        };
-                    }
-                });
-                
-                ctx.restore();
-            }
-
-            // Convert canvas to blob and download
-            canvas.toBlob(blob => {
-                if (blob) {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = 'photo-collage-' + Date.now() + '.png';
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    setTimeout(() => URL.revokeObjectURL(url), 100);
-                }
-            }, 'image/png');
-        }
-
-        function clearAll() {
-            if (confirm('Clear all photos and start over?')) {
-                photos = [];
-                collageGenerated = false;
-                document.getElementById('collage').innerHTML = '';
-                updatePhotoCount();
-            }
-        }
-    </script>
-</body>
+    <script src="script.js"></script>
+  </body>
 </html>
